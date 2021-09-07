@@ -5,6 +5,7 @@ import {
   fromPromise,
 } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
+import { REFRESH_TOKEN } from '../graphql/auth';
 import cache from './cache';
 
 const TOKEN_EXPIRED = 'token expired';
@@ -19,8 +20,7 @@ const httpLink = createHttpLink({
 const errorLink = onError(({ graphQLErrors, operation, forward }) => {
   if (client && graphQLErrors?.[0].message === TOKEN_EXPIRED) {
     const refresh = fromPromise(
-      client.mutate({ mutation: {} }).then(({ data }) => {
-        // TODO: Add refresh token graphql muation
+      client.mutate({ mutation: REFRESH_TOKEN }).then(({ data }) => {
         return data.RefreshToken.ok;
       })
     );
