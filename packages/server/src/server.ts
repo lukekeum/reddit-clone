@@ -21,16 +21,25 @@ export class Server {
     const schema = await generateSchema()
     const server = new ApolloServer({
       schema,
+      formatError: (err) => {
+        if (err.message.startsWith('Database Error: ')) {
+          return new Error('Internal server error')
+        }
+
+        return err
+      },
     })
     await server.start()
 
     server.applyMiddleware({ app: this.app, path: '/graphql' })
   }
 
-  listen(port?: number): http.Server {
+  listen(port?: number): Promise<http.Server> {
     const PORT = port || Number(process.env.PORT) || 3000
 
-    return this.app.listen(PORT)
+    return new Promise((res) => {
+      res(this.app.listen(PORT))
+    })
   }
 }
 
