@@ -11,13 +11,13 @@ export class Server {
   constructor() {
     this.app = express()
 
-    this._setupApolloServer()
+    void this._setupApolloServer()
 
     this.app.use(cors({ origin: '*', credentials: true }))
     this.app.use(compression({ filter: compressFilter }))
   }
 
-  async _setupApolloServer() {
+  async _setupApolloServer(): Promise<void> {
     const schema = await generateSchema()
     const server = new ApolloServer({
       schema,
