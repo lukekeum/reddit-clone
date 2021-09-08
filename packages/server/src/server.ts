@@ -13,7 +13,7 @@ export class Server {
 
     this._setupApolloServer()
 
-    this.app.use(cors())
+    this.app.use(cors({ origin: '*', credentials: true }))
     this.app.use(compression({ filter: compressFilter }))
   }
 
