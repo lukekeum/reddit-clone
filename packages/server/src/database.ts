@@ -1,15 +1,20 @@
 import 'pg'
-import { ConnectionOptions, createConnection, Connection } from 'typeorm'
+import {
+  ConnectionOptions,
+  createConnection,
+  Connection,
+  getConnection,
+} from 'typeorm'
 import entities from './entities'
 
 export class Database {
-  private _connectionOptions: ConnectionOptions
+  _connectionOptions: ConnectionOptions
 
   constructor() {
     this._initialOptions()
   }
 
-  private _initialOptions() {
+  _initialOptions(): void {
     /* eslint-disable */
     this._connectionOptions = {
       entities,
@@ -26,7 +31,19 @@ export class Database {
     /* eslint-enable */
   }
 
-  public connect(connectionOptions?: ConnectionOptions): Promise<Connection> {
+  connect(connectionOptions?: ConnectionOptions): Promise<Connection> {
     return createConnection(connectionOptions || this._connectionOptions)
+  }
+
+  static async close(connectionName: string): Promise<boolean> {
+    try {
+      const conn = getConnection(connectionName)
+
+      await conn.close()
+
+      return true
+    } catch (err) {
+      return false
+    }
   }
 }
