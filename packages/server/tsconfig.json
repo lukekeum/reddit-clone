@@ -15,9 +15,9 @@
     "resolveJsonModule": true,
     "sourceMap": true,
     "baseUrl": ".",
-    "typeRoots": ["./node_modules/@types", "src/@types"],
     "paths": {
-      "@src/*": ["src/*"]
-    }
+      "@src/*": ["src/*"],
+      "@tests/*": ["tests/*"]
+    },
   }
 }
