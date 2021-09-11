@@ -2,10 +2,11 @@ import './utils/env'
 import 'reflect-metadata'
 import { Server } from './server'
 import { Database } from './database'
+import { Container } from 'typedi'
 import logger from './utils/logger'
 
-const server = new Server()
-const database = new Database()
+const server = Container.get(Server)
+const database = Container.get(Database)
 
 void database
   .connect()
