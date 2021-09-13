@@ -1,3 +1,5 @@
+import '../env'
+import 'reflect-metadata'
 import { Database } from '@src/database'
 import Container from 'typedi'
 
