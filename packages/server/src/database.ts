@@ -8,15 +8,13 @@ import {
 import entities from './entities'
 
 export class Database {
-  _connectionOptions: ConnectionOptions
-
-  constructor() {
-    this._initialOptions()
+  constructor(private connectionOptions?: ConnectionOptions) {
+    this.connectionOptions || void this._initialOptions()
   }
 
   _initialOptions(): void {
     /* eslint-disable */
-    this._connectionOptions = {
+    this.connectionOptions = {
       entities,
       type: process.env.TYPEORM_TYPE as any,
       host: process.env.TYPEORM_HOST,
@@ -32,7 +30,9 @@ export class Database {
   }
 
   connect(connectionOptions?: ConnectionOptions): Promise<Connection> {
-    return createConnection(connectionOptions || this._connectionOptions)
+    return createConnection(
+      (connectionOptions || this.connectionOptions) as ConnectionOptions
+    )
   }
 
   static async close(connectionName: string): Promise<boolean> {
