@@ -82,7 +82,7 @@ describe('회원가입', () => {
     const userFromDB = await userRepository.findOneByEmail(email)
 
     expect(userFromDB).toBeDefined()
-    expect(userFromDB?.email === user.email).toEqual(true)
-    expect(userFromDB?.username === user.username).toEqual(true)
+    expect(userFromDB?.email === user.email).toBe(true)
+    expect(userFromDB?.username === user.username).toBe(true)
   })
 })
