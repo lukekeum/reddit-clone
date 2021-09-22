@@ -37,12 +37,6 @@ describe('로그인', () => {
     mockUser = await userRepository.create(userData).save()
   })
 
-  afterEach(async () => {
-    const userRepository = getCustomRepository(UserRepository)
-
-    await userRepository.delete(mockUser)
-  })
-
   it('올바르지 않은 유저이름 값', async () => {
     const user = await graphQLCall({
       source: LOGIN_USER,
