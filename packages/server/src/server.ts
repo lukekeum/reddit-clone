@@ -1,25 +1,36 @@
+/* eslint-disable @typescript-eslint/require-await */
 import express, { Express, Request, Response } from 'express'
 import { ApolloServer } from 'apollo-server-express'
 import http from 'http'
 import cors from 'cors'
 import compression from 'compression'
 import generateSchema from './graphql/schema'
+import Container from 'typedi'
+import cookieParser from 'cookie-parser'
+import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core'
 
 export class Server {
   readonly app: Express
+  server: ApolloServer
 
   constructor() {
     this.app = express()
 
-    void this._setupApolloServer()
+    void this.setupApolloServer().then(() => {
+      void this.server.start().then(() => {
+        this.server.applyMiddleware({ app: this.app, path: '/graphql' })
+      })
+    })
 
     this.app.use(cors({ origin: '*', credentials: true }))
     this.app.use(compression({ filter: compressFilter }))
+    this.app.use(cookieParser())
   }
 
-  async _setupApolloServer(): Promise<void> {
+  async setupApolloServer(): Promise<ApolloServer> {
     const schema = await generateSchema()
-    const server = new ApolloServer({
+
+    this.server = new ApolloServer({
       schema,
       formatError: (err) => {
         if (err.message.startsWith('Database Error: ')) {
@@ -28,10 +39,28 @@ export class Server {
 
         return err
       },
+      context: ({ req, res }) => {
+        const requestId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)
+        const container = Container.of(`${requestId}`)
+        const context = { requestId, req, res, container }
+        container.set('context', context)
+        return context
+      },
+      plugins: [
+        ApolloServerPluginLandingPageGraphQLPlayground(),
+        {
+          async requestDidStart() {
+            return {
+              async willSendResponse(requestContext) {
+                Container.reset(requestContext.context.requestId)
+              },
+            }
+          },
+        },
+      ],
     })
-    await server.start()
 
-    server.applyMiddleware({ app: this.app, path: '/graphql' })
+    return this.server
   }
 
   listen(port?: number): Promise<http.Server> {
