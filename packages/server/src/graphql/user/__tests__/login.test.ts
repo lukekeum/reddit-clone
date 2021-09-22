@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { TokenResponse } from '../UserResolver'
 import { isJWT } from 'class-validator'
 import { verify } from 'jsonwebtoken'
-import { ACCESS_TOKEN_SECRET } from '@src/contants'
+import { ACCESS_TOKEN_SECRET } from '@src/constant'
 
 describe('로그인', () => {
   const LOGIN_USER = gql`

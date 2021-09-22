@@ -5,7 +5,7 @@ import { Service } from 'typedi'
 import { InjectRepository } from 'typeorm-typedi-extensions'
 import { compare } from 'bcrypt'
 import { verify } from 'jsonwebtoken'
-import { ACCESS_TOKEN_SECRET } from '@src/contants'
+import { ACCESS_TOKEN_SECRET } from '@src/constant'
 
 export interface LoginReturn {
   user: User
