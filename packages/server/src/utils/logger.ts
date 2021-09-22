@@ -5,8 +5,7 @@ const { NODE_ENV } = process.env
 interface TransformInfo {
   level: string
   message: string
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any
+  [key: string]: unknown
 }
 
 const enumerateErrorFormat = format((info) => {
