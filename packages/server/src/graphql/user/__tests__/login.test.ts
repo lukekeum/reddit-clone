@@ -15,7 +15,10 @@ describe('로그인', () => {
   const LOGIN_USER = gql`
     mutation ($username: String!, $password: String!) {
       login(input: { username: $username, password: $password }) {
-        user_id
+        user {
+          id
+          username
+        }
         accessToken
       }
     }
@@ -65,11 +68,9 @@ describe('로그인', () => {
   })
 
   it('유저 로그인', async () => {
-    const user = mockUser
-
     const response = await graphQLCall<{ login: TokenResponse }>({
       source: LOGIN_USER,
-      variables: { username: user.username, password: userData.password },
+      variables: { username: mockUser.username, password: userData.password },
       context: {
         res: {
           cookie: jest.fn(),
@@ -79,11 +80,10 @@ describe('로그인', () => {
 
     expect(response.data).toBeDefined()
 
-    const { accessToken, user_id } = response.data!.login
+    const { accessToken, user } = response.data!.login
 
-    expect(response.data).toBeDefined()
     expect(isJWT(accessToken)).toBe(true)
-    expect(user_id).toBe(mockUser.id)
+    expect(user.id).toBe(mockUser.id)
 
     const payload = verify(accessToken, ACCESS_TOKEN_SECRET) as {
       userId: string
