@@ -4,11 +4,11 @@ import {
   Arg,
   Ctx,
   Field,
-  ID,
   Mutation,
   ObjectType,
   Query,
   Resolver,
+  Authorized,
 } from 'type-graphql'
 import { Inject, Service } from 'typedi'
 import { GraphQLContext } from '../schema'
@@ -42,6 +42,7 @@ export class UserResolver {
     const { accessToken, refreshToken } = payload.token
 
     const refreshTokenExpires = 1000 * 60 * 60 * 24 * 7
+    const accessTokenExpires = 1000 * 60 * 15
 
     const cookieOptions: CookieOptions = {
       path: '/',
@@ -49,33 +50,33 @@ export class UserResolver {
       secure: process.env.NODE_ENV === 'production',
     }
 
+    res.cookie('token', accessToken, {
+      maxAge: accessTokenExpires,
+      ...cookieOptions,
+    })
+
     res.cookie('jid', refreshToken, {
       maxAge: refreshTokenExpires,
       ...cookieOptions,
     })
 
     return {
-      user_id: payload.user.id,
+      user: payload.user,
       accessToken,
     }
   }
 
   @Query(() => User, { nullable: true })
-  async me(@Ctx() { req }: GraphQLContext): Promise<User | null> {
-    const authorization = req.headers['authorization']
-
-    if (!authorization) return null
-
-    const token = authorization.split(' ')[1]
-
-    return this.userService.me(token)
+  @Authorized()
+  me(@Ctx() { req }: GraphQLContext): User | null {
+    return req.user || null
   }
 }
 
 @ObjectType()
 export class TokenResponse {
-  @Field(() => ID)
-  user_id: string
+  @Field(() => User)
+  user: User
 
   @Field()
   accessToken: string

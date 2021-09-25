@@ -3,6 +3,7 @@ import { GraphQLSchema } from 'graphql'
 import { UserResolver } from './user/UserResolver'
 import Container from 'typedi'
 import { Request, Response } from 'express'
+import { customAuthChecker } from '@src/middlewares/customAuthChecker'
 
 export interface GraphQLContext {
   req: Request
@@ -25,8 +26,10 @@ export default async function generateSchema(
   const schema = await buildSchema({
     resolvers: [DefaultResolver, UserResolver],
     validate: false,
+    dateScalarMode: 'isoDate',
     container: ({ context }: ResolverData<GraphQLContext>) =>
       test ? Container : Container.of(context.requestId),
+    authChecker: customAuthChecker,
   })
 
   return schema

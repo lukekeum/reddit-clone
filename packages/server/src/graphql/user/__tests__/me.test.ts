@@ -2,9 +2,9 @@
 import { User } from '@src/entities/user/User'
 import { UserRepository } from '@src/entities/user/UserRepository'
 import { getCustomRepository } from 'typeorm'
-import faker from 'faker'
 import { gql } from 'apollo-server-core'
 import { graphQLCall } from '@src/utils/tests/tools'
+import faker from 'faker'
 
 interface MeResponse {
   me: User | null
@@ -53,7 +53,7 @@ describe('me', () => {
     const response = await graphQLCall<MeResponse>({
       source: ME_QUERY,
       context: {
-        req: { headers: { authorization: 'Bearer wrong token' } },
+        req: { cookies: { token: 'wrong token' } },
       },
     })
 
@@ -71,7 +71,7 @@ describe('me', () => {
     const response = await graphQLCall<MeResponse>({
       source: ME_QUERY,
       context: {
-        req: { headers: { authorization: `Bearer ${accessToken as string}` } },
+        req: { cookies: { token: accessToken } },
       },
     })
 

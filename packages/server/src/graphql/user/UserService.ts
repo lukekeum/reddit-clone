@@ -54,15 +54,4 @@ export default class UserService {
       },
     }
   }
-
-  public async me(token: string): Promise<User | null> {
-    try {
-      const payload = verify(token, ACCESS_TOKEN_SECRET) as { userId: string }
-      const user = await this.userRepository.findOneById(payload.userId)
-
-      return user || null
-    } catch (e) {
-      throw new AuthenticationError('Invalid Token')
-    }
-  }
 }
