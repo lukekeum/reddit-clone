@@ -57,11 +57,11 @@ export class UserResolver {
     return payload.user || null
   }
 
-  @Mutation(() => RefreshTokenResponse, { nullable: true })
+  @Mutation(() => Boolean, { defaultValue: false })
   @Authorized()
   async refreshToken(
     @Ctx() { req, res, payload }: GraphQLContext
-  ): Promise<RefreshTokenResponse> {
+  ): Promise<boolean> {
     try {
       const { token, jid } = req.cookies
 
@@ -75,39 +75,40 @@ export class UserResolver {
 
       setUserToken(res, { accessToken, refreshToken })
 
-      return {
-        ok: true,
-      }
+      return true
     } catch (err) {
-      return {
-        ok: false,
-      }
+      return false
     }
+  }
+
+  @Mutation(() => Boolean)
+  logout(@Ctx() { res }: GraphQLContext): boolean {
+    res.clearCookie('jid')
+    res.clearCookie('token')
+
+    return true
   }
 }
 
-function setUserToken(res: Response, tokens: Record<string, string>): void {
+function setUserToken(
+  res: Response,
+  tokens: { accessToken: string; refreshToken: string }
+): void {
   const cookieOptions: CookieOptions = {
     path: '/',
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
   }
 
-  res.cookie('token', tokens[0], {
+  res.cookie('token', tokens['accessToken'], {
     maxAge: ACCESS_TOKEN_EXPIRES,
     ...cookieOptions,
   })
 
-  res.cookie('jid', tokens[1], {
+  res.cookie('jid', tokens['refreshToken'], {
     maxAge: REFRESH_TOKEN_EXPIRES,
     ...cookieOptions,
   })
-}
-
-@ObjectType()
-export class RefreshTokenResponse {
-  @Field(() => Boolean)
-  ok: boolean
 }
 
 @ObjectType()
