@@ -4,8 +4,6 @@ import { AuthenticationError } from 'apollo-server-errors'
 import { Service } from 'typedi'
 import { InjectRepository } from 'typeorm-typedi-extensions'
 import { compare } from 'bcrypt'
-import { verify } from 'jsonwebtoken'
-import { ACCESS_TOKEN_SECRET } from '@src/constant'
 
 export interface LoginReturn {
   user: User
@@ -44,13 +42,38 @@ export default class UserService {
     const comparePassword = await compare(password, user.password)
     if (!comparePassword) throw new AuthenticationError('Invalid Password')
 
-    const tokens = this.userRepository.generateToken(user)
+    const tokens = await this.userRepository.generateToken(user)
 
     return {
       user,
       token: {
         refreshToken: tokens[0],
         accessToken: tokens[1],
+      },
+    }
+  }
+
+  public async refreshToken(
+    user: User | undefined,
+    access: string,
+    refresh: string
+  ): Promise<Pick<LoginReturn, 'token'>> {
+    if (access || refresh) throw new AuthenticationError('Token not Found')
+    if (!user) throw new AuthenticationError('User not Found')
+
+    const [refreshToken, accessToken] = await this.userRepository.refreshToken(
+      user,
+      refresh,
+      access
+    )
+
+    if (!refreshToken || !accessToken)
+      throw new AuthenticationError('Token not Found')
+
+    return {
+      token: {
+        accessToken,
+        refreshToken,
       },
     }
   }

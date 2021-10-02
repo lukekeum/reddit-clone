@@ -1,8 +1,10 @@
 import { validate } from 'class-validator'
 import { Service } from 'typedi'
-import { EntityRepository, Repository } from 'typeorm'
+import { EntityRepository, getCustomRepository, Repository } from 'typeorm'
 import { User } from './User'
-import * as jwt from 'jsonwebtoken'
+import { decode, JwtPayload, sign } from 'jsonwebtoken'
+import { RefreshTokenRepository } from '../refreshToken/RefreshTokenRepository'
+import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from '@src/constant'
 
 @Service()
 @EntityRepository(User)
@@ -28,24 +30,63 @@ export class UserRepository extends Repository<User> {
     })
   }
 
-  public generateToken(user: User): readonly [string, string] {
-    const { REFRESH_TOKEN_SECRET, ACCESS_TOKEN_SECRET } = process.env
+  public async generateToken(
+    user: User,
+    tokenId?: string
+  ): Promise<readonly [string, string]> {
+    const refreshTokenRepository = getCustomRepository(RefreshTokenRepository)
 
-    if (!REFRESH_TOKEN_SECRET || !ACCESS_TOKEN_SECRET)
-      throw new Error('Secret not found')
+    if (!tokenId) {
+      const authToken = await refreshTokenRepository
+        .create({ fk_user_id: user.id })
+        .save()
+      tokenId = authToken.id
+    }
 
-    const refreshToken = jwt.sign(
-      { userId: user.id, count: user.tokenVersion },
+    const refreshToken = sign(
+      { userId: user.id, tokenId: tokenId },
       REFRESH_TOKEN_SECRET,
       {
-        expiresIn: '7d',
+        subject: 'refresh_token',
+        expiresIn: '30d',
       }
     )
 
-    const accessToken = jwt.sign({ userId: user.id }, ACCESS_TOKEN_SECRET, {
-      expiresIn: '15min',
+    const accessToken = sign({ userId: user.id }, ACCESS_TOKEN_SECRET, {
+      subject: 'access_token',
+      expiresIn: '1h',
     })
 
     return [refreshToken, accessToken] as const
   }
+
+  public async refreshToken(
+    user: User,
+    refreshToken: string,
+    accessToken = ''
+  ): Promise<readonly [string, string] | []> {
+    const now = new Date().getTime()
+    const { exp: refreshTokenExp, tokenId } = decode(
+      refreshToken
+    ) as DecodedRefreshToken
+    const diff = (refreshTokenExp || 0) * 1000 - now
+
+    if (diff < 1000 * 60 * 60 * 24 * 15) {
+      const [newRefreshToken, newAccessToken] = await this.generateToken(
+        user,
+        tokenId
+      )
+      refreshToken = newRefreshToken
+      accessToken = newAccessToken
+
+      return [refreshToken, accessToken] as const
+    }
+
+    return []
+  }
+}
+
+export interface DecodedRefreshToken extends JwtPayload {
+  userId: string
+  tokenId: string
 }
