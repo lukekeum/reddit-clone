@@ -4,7 +4,7 @@ import { ApolloServer } from 'apollo-server-express'
 import http from 'http'
 import cors from 'cors'
 import compression from 'compression'
-import generateSchema from './graphql/schema'
+import generateSchema, { GraphQLContext } from './graphql/schema'
 import Container from 'typedi'
 import cookieParser from 'cookie-parser'
 import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core'
@@ -40,9 +40,18 @@ export class Server {
         return err
       },
       context: ({ req, res }) => {
-        const requestId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)
+        const requestId = `${Math.floor(
+          Math.random() * Number.MAX_SAFE_INTEGER
+        )}`
         const container = Container.of(`${requestId}`)
-        const context = { requestId, req, res, container }
+        const payload = { user: undefined }
+        const context: GraphQLContext = {
+          requestId,
+          payload,
+          req,
+          res,
+          container,
+        }
         container.set('context', context)
         return context
       },

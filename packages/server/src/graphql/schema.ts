@@ -4,10 +4,16 @@ import { UserResolver } from './user/UserResolver'
 import Container from 'typedi'
 import { Request, Response } from 'express'
 import { customAuthChecker } from '@src/middlewares/customAuthChecker'
+import { User } from '@src/entities/user/User'
+
+export interface ContextPayload {
+  user?: User
+}
 
 export interface GraphQLContext {
   req: Request
   res: Response
+  payload: ContextPayload
   requestId: string
   container: Container
 }
