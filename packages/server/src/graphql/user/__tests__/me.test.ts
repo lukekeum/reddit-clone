@@ -59,7 +59,9 @@ describe('me', () => {
 
     expect(response.data!.me).toBeNull()
     expect(response.errors).toHaveLength(1)
-    expect(response.errors![0].message).toBe('Invalid Token')
+    expect(response.errors![0].message).toBe(
+      'Access denied! You need to be authorized to perform this action!'
+    )
   })
 
   it('올바른 헤더 토큰', async () => {
