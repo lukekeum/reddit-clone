@@ -1,5 +1,5 @@
 import { IsString } from 'class-validator'
-import { Field, ID } from 'type-graphql'
+import { Field, ID, ObjectType } from 'type-graphql'
 import {
   BaseEntity,
   Column,
@@ -14,6 +14,7 @@ import {
 import { Post } from '../post/Post'
 import { User } from '../user/User'
 
+@ObjectType()
 @Entity('subs')
 export class Sub extends BaseEntity {
   constructor(sub: Partial<Sub>) {
