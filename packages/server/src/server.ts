@@ -8,6 +8,7 @@ import generateSchema, { GraphQLContext } from './graphql/schema'
 import Container from 'typedi'
 import cookieParser from 'cookie-parser'
 import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core'
+import ResetContainer from './plugins/ResetContainer'
 
 export class Server {
   readonly app: Express
@@ -57,15 +58,7 @@ export class Server {
       },
       plugins: [
         ApolloServerPluginLandingPageGraphQLPlayground(),
-        {
-          async requestDidStart() {
-            return {
-              async willSendResponse(requestContext) {
-                Container.reset(requestContext.context.requestId)
-              },
-            }
-          },
-        },
+        ResetContainer,
       ],
     })
 
