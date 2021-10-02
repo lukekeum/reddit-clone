@@ -42,10 +42,6 @@ export class User extends BaseEntity {
   @Column('varchar')
   password: string
 
-  @Exclude()
-  @Column('int', { name: 'token_version', default: 0 })
-  tokenVersion: number
-
   @Field()
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date
