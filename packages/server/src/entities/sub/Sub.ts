@@ -30,10 +30,10 @@ export class Sub extends BaseEntity {
   @Column('varchar', { unique: true })
   name: string
 
-  @Column('varchar')
+  @Column('uuid')
   fk_owner_id: string
 
-  @Column('varchar', { array: true })
+  @Column('uuid', { array: true })
   fk_posts_id: string[]
 
   @Field(() => String, { nullable: true })
