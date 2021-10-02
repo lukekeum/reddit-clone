@@ -18,12 +18,10 @@ export class RefreshToken extends BaseEntity {
   @Column('uuid')
   fk_user_id: string
 
-  @Column('timestampz')
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date
 
-  @Column('timestampz')
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date
 
   @Column('boolean', { default: false })
