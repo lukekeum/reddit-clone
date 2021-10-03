@@ -34,7 +34,7 @@ export class Sub extends BaseEntity {
   @Column('uuid')
   fk_owner_id: string
 
-  @Column('uuid', { array: true })
+  @Column('uuid', { array: true, nullable: true })
   fk_posts_id: string[]
 
   @Field(() => String, { nullable: true })

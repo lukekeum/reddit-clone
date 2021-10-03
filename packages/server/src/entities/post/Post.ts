@@ -9,10 +9,13 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
 import { Sub } from '../sub/Sub'
+import { User } from '../user/User'
+import { Vote } from '../vote/Vote'
 
 @ObjectType()
 @Entity('posts')
@@ -32,11 +35,14 @@ export class Post extends BaseEntity {
   @Column('uuid', { nullable: true })
   fk_sub_name: string
 
-  @Column('uuid', { array: true })
+  @Column('uuid', { array: true, nullable: true })
   fk_votes_id: string[]
 
   @Column('uuid', { nullable: true })
   fk_parent_id: string
+
+  @Column('uuid', { nullable: true })
+  fk_super_parent_id: string
 
   @Field(() => Boolean)
   @Column('bool', { default: false })
@@ -67,10 +73,27 @@ export class Post extends BaseEntity {
   @JoinColumn({ name: 'fk_sub_name', referencedColumnName: 'name' })
   sub: Sub
 
+  @Field(() => Vote)
+  @OneToMany(() => Vote, (vote) => vote.post)
+  @JoinColumn({ name: 'fk_votes_id', referencedColumnName: 'id' })
+  votes: Vote[]
+
   @Field(() => Post, { nullable: true })
   @ManyToOne(() => Post, (post) => post.parent, { nullable: true })
   @JoinColumn({ name: 'fk_parent_id', referencedColumnName: 'id' })
   parent: Post
+
+  @Field(() => Post, { nullable: true })
+  @ManyToOne(() => Post, (post) => post.super_parent, {
+    nullable: true,
+  })
+  @JoinColumn({ name: 'fk_super_parent_id', referencedColumnName: 'id' })
+  super_parent: Post
+
+  @Field(() => User)
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'fk_user_id', referencedColumnName: 'id' })
+  user: User
 
   @Field(() => Date)
   @CreateDateColumn({ name: 'created_at' })
