@@ -1,5 +1,5 @@
 import { getCustomRepository } from 'typeorm'
-import { PostRepository } from '../post/PostRepository'
+import { PostRepository } from '../PostRepository'
 import faker from 'faker'
 import { User } from '@src/entities/user/User'
 import { UserRepository } from '@src/entities/user/UserRepository'
@@ -18,6 +18,7 @@ describe('post 엔티티', () => {
 
   const subData = {
     name: faker.name.title(),
+    title: faker.name.title(),
   }
 
   beforeAll(async () => {
