@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator'
+import { IsString, Length, maxLength } from 'class-validator'
 import { Field, ID, ObjectType } from 'type-graphql'
 import {
   BaseEntity,
@@ -31,6 +31,18 @@ export class Sub extends BaseEntity {
   @Column('varchar', { unique: true })
   name: string
 
+  @Field(() => String)
+  @IsString({ message: 'Title must be string' })
+  @Length(1, 30, { message: 'Title must be between 1 and 30 characters' })
+  @Column('varchar')
+  title: string
+
+  @Field(() => String)
+  @IsString({ message: 'Description must be string' })
+  @Length(1, 255, { message: 'Description must be less than 255 characters' })
+  @Column('varchar', { nullable: true })
+  description: string
+
   @Column('uuid')
   fk_owner_id: string
 
@@ -45,7 +57,7 @@ export class Sub extends BaseEntity {
   @Column('varchar', { nullable: true })
   profile_img: string | null
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'fk_owner_id', referencedColumnName: 'id' })
   owner: User
 

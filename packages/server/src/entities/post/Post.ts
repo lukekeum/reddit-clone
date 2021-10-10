@@ -6,6 +6,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  getCustomRepository,
   Index,
   JoinColumn,
   ManyToOne,
@@ -16,6 +17,7 @@ import {
 import { Sub } from '../sub/Sub'
 import { User } from '../user/User'
 import { Vote } from '../vote/Vote'
+import { VoteRepository } from '../vote/VoteRepository'
 
 @ObjectType()
 @Entity('posts')
@@ -69,7 +71,10 @@ export class Post extends BaseEntity {
   content: string
 
   @Field(() => Sub, { nullable: true })
-  @ManyToOne(() => Sub, (sub) => sub.posts, { nullable: true })
+  @ManyToOne(() => Sub, (sub) => sub.posts, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'fk_sub_name', referencedColumnName: 'name' })
   sub: Sub
 
@@ -91,7 +96,7 @@ export class Post extends BaseEntity {
   super_parent: Post
 
   @Field(() => User)
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'fk_user_id', referencedColumnName: 'id' })
   user: User
 
@@ -102,6 +107,11 @@ export class Post extends BaseEntity {
   @Field(() => Date)
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date
+
+  @Field(() => Number)
+  get voteCount(): Promise<number> {
+    return getCustomRepository(VoteRepository).getVoteNumber(this.id)
+  }
 
   @BeforeInsert()
   generateSlugAndIdentifier(): void {
