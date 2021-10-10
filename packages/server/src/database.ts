@@ -25,6 +25,15 @@ export class Database {
       dropSchema: process.env.TYPEORM_DROPSCHEMA === 'true',
       synchronize: process.env.TYPEORM_SYNCRONIZE === 'true',
       logging: process.env.TYPEORM_LOGGING === 'true',
+      cache: {
+        type: 'redis',
+        options: {
+          host: process.env.REDIS_HOST,
+          port: parseInt(process.env.REDIS_PORT || '6379', 10),
+          password: process.env.REDIS_PASSWORD,
+          duration: 1000 * 30, // 30 seconds
+        },
+      },
     }
     /* eslint-enable */
   }
