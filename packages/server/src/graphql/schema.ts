@@ -6,6 +6,8 @@ import { customAuthChecker } from '@src/middlewares/customAuthChecker'
 import { User } from '@src/entities/user/User'
 import { SubResolver } from './sub/SubResolver'
 import Container from 'typedi'
+import { PostResolver } from './post/PostResolver'
+import { loaders } from '@src/utils/loaders'
 
 export interface ContextPayload {
   user?: User
@@ -17,6 +19,7 @@ export interface GraphQLContext {
   payload: ContextPayload
   requestId: string
   container: Container
+  loaders: typeof loaders
 }
 
 @Resolver()
@@ -31,7 +34,7 @@ export default async function generateSchema(
   test = false
 ): Promise<GraphQLSchema> {
   const schema = await buildSchema({
-    resolvers: [DefaultResolver, UserResolver, SubResolver],
+    resolvers: [DefaultResolver, UserResolver, SubResolver, PostResolver],
     validate: false,
     dateScalarMode: 'isoDate',
     container: ({ context }: ResolverData<GraphQLContext>) =>

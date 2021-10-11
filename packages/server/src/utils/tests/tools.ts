@@ -2,6 +2,7 @@ import generateSchema, { GraphQLContext } from '@src/graphql/schema'
 import { ExecutionResult, graphql, GraphQLSchema } from 'graphql'
 import { ASTNode, print as gqlToString } from 'graphql/language'
 import { Maybe } from 'graphql/jsutils/Maybe'
+import { loaders } from '../loaders'
 
 type DeepPartial<T> = { [P in keyof T]?: Partial<T[P]> }
 
@@ -18,6 +19,7 @@ const defaultContext = (): Partial<GraphQLContext> => ({
     user: undefined,
   },
   requestId: `${Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)}`,
+  loaders,
 })
 
 class GraphQLTesting {

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/require-await */
 import express, { Express, Request, Response } from 'express'
 import { ApolloServer } from 'apollo-server-express'
+import { loaders } from './utils/loaders'
 import http from 'http'
 import cors from 'cors'
 import compression from 'compression'
@@ -52,6 +53,7 @@ export class Server {
           req,
           res,
           container,
+          loaders,
         }
         container.set('context', context)
         return context
