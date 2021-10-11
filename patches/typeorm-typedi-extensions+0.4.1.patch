@@ -1,0 +1,36 @@
+diff --git a/node_modules/typeorm-typedi-extensions/cjs/container-registrations.const.js b/node_modules/typeorm-typedi-extensions/cjs/container-registrations.const.js
+index 3cd5f4e..aa7e961 100644
+--- a/node_modules/typeorm-typedi-extensions/cjs/container-registrations.const.js
++++ b/node_modules/typeorm-typedi-extensions/cjs/container-registrations.const.js
+@@ -7,5 +7,5 @@ const typeorm_1 = require("typeorm");
+  * We need to set imported TypeORM classes before requesting them, otherwise we
+  * would receive a "ServiceNotFoundError" above TypeDI 0.9.1 from the decorators.
+  */
+-typedi_1.Container.set({ id: typeorm_1.ConnectionManager, type: typeorm_1.ConnectionManager });
++typedi_1.Container.set({ id: typeorm_1.ConnectionManager, type: typeorm_1.ConnectionManager, global: true });
+ //# sourceMappingURL=container-registrations.const.js.map
+\ No newline at end of file
+diff --git a/node_modules/typeorm-typedi-extensions/esm2015/container-registrations.const.js b/node_modules/typeorm-typedi-extensions/esm2015/container-registrations.const.js
+index 3048951..79569af 100644
+--- a/node_modules/typeorm-typedi-extensions/esm2015/container-registrations.const.js
++++ b/node_modules/typeorm-typedi-extensions/esm2015/container-registrations.const.js
+@@ -5,5 +5,5 @@ import { ConnectionManager } from 'typeorm';
+  * We need to set imported TypeORM classes before requesting them, otherwise we
+  * would receive a "ServiceNotFoundError" above TypeDI 0.9.1 from the decorators.
+  */
+-Container.set({ id: ConnectionManager, type: ConnectionManager });
++Container.set({ id: ConnectionManager, type: ConnectionManager, global: true });
+ //# sourceMappingURL=container-registrations.const.js.map
+\ No newline at end of file
+diff --git a/node_modules/typeorm-typedi-extensions/esm5/container-registrations.const.js b/node_modules/typeorm-typedi-extensions/esm5/container-registrations.const.js
+index 3048951..79569af 100644
+--- a/node_modules/typeorm-typedi-extensions/esm5/container-registrations.const.js
++++ b/node_modules/typeorm-typedi-extensions/esm5/container-registrations.const.js
+@@ -5,5 +5,5 @@ import { ConnectionManager } from 'typeorm';
+  * We need to set imported TypeORM classes before requesting them, otherwise we
+  * would receive a "ServiceNotFoundError" above TypeDI 0.9.1 from the decorators.
+  */
+-Container.set({ id: ConnectionManager, type: ConnectionManager });
++Container.set({ id: ConnectionManager, type: ConnectionManager, global: true });
+ //# sourceMappingURL=container-registrations.const.js.map
+\ No newline at end of file
