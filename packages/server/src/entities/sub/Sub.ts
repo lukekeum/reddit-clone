@@ -57,10 +57,12 @@ export class Sub extends BaseEntity {
   @Column('varchar', { nullable: true })
   profile_img: string | null
 
+  @Field(() => User)
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'fk_owner_id', referencedColumnName: 'id' })
   owner: User
 
+  @Field(() => [Post])
   @OneToMany(() => Post, (post) => post.sub)
   @JoinColumn({ name: 'fk_posts_id', referencedColumnName: 'id' })
   posts: Post[]
