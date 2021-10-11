@@ -1,5 +1,5 @@
 import { Service } from 'typedi'
-import { EntityRepository, Repository } from 'typeorm'
+import { EntityRepository, Repository, SelectQueryBuilder } from 'typeorm'
 import { validate } from 'class-validator'
 import { Sub } from './Sub'
 
@@ -24,16 +24,18 @@ export class SubRepository extends Repository<Sub> {
     })
   }
 
-  public async getSub(name: string): Promise<Sub> {
+  public findOneByName(name: string): Promise<Sub> {
     return this.createQueryBuilder('sub')
-      .where('LOWER(sub.name) = :name', { name: name.toLowerCase() })
+      .where('LOWER(sub.name) = :name', {
+        name: name.toLowerCase(),
+      })
       .getOneOrFail()
   }
 
   public async searchSub(keyword: string): Promise<Sub[]> {
     return this.createQueryBuilder('sub')
       .where('LOWER(sub.name) LIKE :name', {
-        name: keyword,
+        name: `${keyword.toLowerCase()}%`,
       })
       .getMany()
   }
